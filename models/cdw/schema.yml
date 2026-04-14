@@ -1,0 +1,184 @@
+version: 2
+
+models:
+
+  # ── CDW Landing ───────────────────────────────────────────────────────────────
+  # Pass-through views that expose IDW landing tables to the CDW domain.
+  # No transformation — schema cdw_landing, aliased with cdw_ prefix.
+
+  - name: cdw_raw_instruments
+    description: >
+      Pass-through view of the IDW instrument master (idw_landing.idw_raw_instruments).
+      Exposes instrument reference data to the CDW domain without transformation.
+    config:
+      materialized: view
+      schema: cdw_landing
+      alias: cdw_raw_instruments
+    columns:
+      - name: isin
+        description: International Securities Identification Number — primary key.
+        tests: [not_null, unique]
+      - name: instrument_name
+        description: Full display name of the instrument.
+        tests: [not_null]
+      - name: asset_class
+        description: Broad asset class (EQUITY or BOND).
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["EQUITY", "BOND"]
+      - name: country_code
+        description: ISO 3166-1 alpha-2 country code of the issuer.
+        tests: [not_null]
+      - name: currency
+        description: ISO 4217 trading currency.
+        tests: [not_null]
+      - name: sector_l1_code
+        description: Top-level sector code (e.g. TECH, FINS).
+        tests: [not_null]
+      - name: sector_l1_name
+        description: Human-readable label for the level-1 sector.
+        tests: [not_null]
+      - name: sector_l2_code
+        description: Sub-sector code within the level-1 sector.
+        tests: [not_null]
+      - name: sector_l2_name
+        description: Human-readable label for the level-2 sub-sector.
+        tests: [not_null]
+      - name: region_code
+        description: Geographic region code (NORTH_AMERICA, EUROPE, ASIA_PAC).
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["NORTH_AMERICA", "EUROPE", "ASIA_PAC"]
+      - name: region_name
+        description: Human-readable region label.
+        tests: [not_null]
+
+  - name: cdw_raw_portfolios
+    description: >
+      Pass-through view of the IDW portfolio master (idw_landing.idw_raw_portfolios).
+      Exposes portfolio and benchmark metadata to the CDW domain without transformation.
+    config:
+      materialized: view
+      schema: cdw_landing
+      alias: cdw_raw_portfolios
+    columns:
+      - name: portfolio_code
+        description: Short alphanumeric code that uniquely identifies the portfolio or benchmark.
+        tests: [not_null, unique]
+      - name: portfolio_name
+        description: Full display name of the portfolio or benchmark.
+        tests: [not_null]
+      - name: base_currency
+        description: ISO 4217 base currency used for NAV and performance reporting.
+        tests: [not_null]
+      - name: is_benchmark
+        description: TRUE if this row is a benchmark/index; FALSE if an actively managed fund.
+        tests: [not_null]
+      - name: benchmark_code
+        description: portfolio_code of the assigned benchmark. NULL for benchmark rows.
+
+  - name: cdw_raw_holdings
+    description: >
+      Pass-through view of daily holdings positions from the IDW landing layer
+      (idw_landing.idw_raw_holdings). One row per (market_date, portfolio_code, isin).
+    config:
+      materialized: view
+      schema: cdw_landing
+      alias: cdw_raw_holdings
+    columns:
+      - name: market_date
+        description: Business day on which the position was valued.
+        tests: [not_null]
+      - name: portfolio_code
+        description: Foreign key to cdw_raw_portfolios.portfolio_code.
+        tests: [not_null]
+      - name: isin
+        description: Foreign key to cdw_raw_instruments.isin.
+        tests: [not_null]
+      - name: quantity
+        description: Number of units held.
+        tests: [not_null]
+      - name: market_value_base
+        description: Market value of the position in the portfolio base currency.
+        tests: [not_null]
+      - name: weight_pct
+        description: Position weight as a percentage of total portfolio NAV (sums to ~100% per portfolio per day).
+        tests: [not_null]
+
+  - name: cdw_raw_performance
+    description: >
+      Pass-through view of daily instrument-level return and attribution data from the
+      IDW landing layer (idw_landing.idw_raw_performance).
+      One row per (market_date, portfolio_code, isin).
+    config:
+      materialized: view
+      schema: cdw_landing
+      alias: cdw_raw_performance
+    columns:
+      - name: market_date
+        description: Business day to which the return observation belongs.
+        tests: [not_null]
+      - name: portfolio_code
+        description: Foreign key to cdw_raw_portfolios.portfolio_code.
+        tests: [not_null]
+      - name: isin
+        description: Foreign key to cdw_raw_instruments.isin.
+        tests: [not_null]
+      - name: daily_return_bps
+        description: Instrument daily return in basis points (σ=60 bps equities, σ=30 bps bonds).
+        tests: [not_null]
+      - name: contribution_bps
+        description: >
+          Instrument contribution to portfolio return: weight_pct × daily_return_bps / 100.
+          Summing across all instruments gives the total portfolio daily return in bps.
+        tests: [not_null]
+
+  # ── CDW Staging S1 ────────────────────────────────────────────────────────────
+  # Joins and enrichment — one row per (market_date, portfolio_code, isin).
+
+  - name: cdw_stg__bkd_lv01_holdings_classified
+    description: >
+      S1 Breakdowns: holdings enriched with the full instrument classification hierarchy
+      sourced from cdw_raw_instruments. Foundation for all S2 breakdown aggregations.
+      One row per (market_date, portfolio_code, isin).
+    columns:
+      - name: market_date
+        tests: [not_null]
+      - name: portfolio_code
+        tests: [not_null]
+      - name: isin
+        tests: [not_null]
+      - name: instrument_name
+        description: Full display name of the instrument.
+      - name: asset_class
+        description: Broad asset class (EQUITY or BOND).
+      - name: country_code
+        description: ISO 3166-1 alpha-2 issuer country code.
+      - name: instrument_currency
+        description: ISO 4217 trading currency of the instrument.
+      - name: region_code
+        description: Geographic region code.
+      - name: region_name
+        description: Human-readable region label.
+      - name: sector_l1_code
+        description: Top-level sector code.
+      - name: sector_l1_name
+        description: Human-readable level-1 sector label.
+      - name: sector_l2_code
+        description: Sub-sector code.
+      - name: sector_l2_name
+        description: Human-readable level-2 sub-sector label.
+      - name: quantity
+        description: Number of units held.
+      - name: market_value_base
+        description: Market value in portfolio base currency.
+      - name: weight_pct
+        description: Position weight as a percentage of portfolio NAV.
+
+
+  # ── CDW Staging S2 ────────────────────────────────────────────────────────────
+  # Aggregations — one model per breakdown dimension + a normalised aggregate.
+  # Aggregations — one model for performance weekly total return.
+

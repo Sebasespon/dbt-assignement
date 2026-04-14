@@ -1,0 +1,83 @@
+version: 2
+
+seeds:
+  - name: idw_raw_instruments
+    schema: idw_landing
+    alias: idw_raw_instruments
+    description: >
+      Instrument master data owned by the IDW domain.
+      One row per instrument identified by its ISIN.
+    config:
+      column_types:
+        isin:             varchar
+        instrument_name:  varchar
+        asset_class:      varchar
+        country_code:     varchar
+        currency:         varchar
+        sector_l1_code:   varchar
+        sector_l1_name:   varchar
+        sector_l2_code:   varchar
+        sector_l2_name:   varchar
+        region_code:      varchar
+        region_name:      varchar
+
+    columns:
+      - name: isin
+        description: International Securities Identification Number — natural primary key.
+        tests:
+          - not_null
+          - unique
+
+      - name: instrument_name
+        description: Full display name of the instrument.
+        tests:
+          - not_null
+
+      - name: asset_class
+        description: Broad asset class of the instrument.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["EQUITY", "BOND"]
+
+      - name: country_code
+        description: ISO 3166-1 alpha-2 country code of the issuer.
+        tests:
+          - not_null
+
+      - name: currency
+        description: ISO 4217 trading currency of the instrument.
+        tests:
+          - not_null
+
+      - name: sector_l1_code
+        description: Top-level GICS-like sector code (e.g. TECH, FINS).
+        tests:
+          - not_null
+
+      - name: sector_l1_name
+        description: Human-readable label for the level-1 sector.
+        tests:
+          - not_null
+
+      - name: sector_l2_code
+        description: Sub-sector code within the level-1 sector (e.g. SWTECH, BANK).
+        tests:
+          - not_null
+
+      - name: sector_l2_name
+        description: Human-readable label for the level-2 sub-sector.
+        tests:
+          - not_null
+
+      - name: region_code
+        description: Geographic region code (e.g. NORTH_AMERICA, EUROPE, ASIA_PAC).
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["NORTH_AMERICA", "EUROPE", "ASIA_PAC"]
+
+      - name: region_name
+        description: Human-readable region label.
+        tests:
+          - not_null

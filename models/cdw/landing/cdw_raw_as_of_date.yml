@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: cdw_raw_as_of_date
+    description:
+      As-of Date table, including relative date logic and date tests, from 2020-01-01 to 2030-12-31.
+    columns:
+      - name: AS_OF_DATE
+        data_tests:
+          - not_null
+      - name: DAY
+      - name: DAY_NAME
+      - name: DAY_OF_WEEK_ISO
+      - name: DAY_OF_WEEK
+      - name: DAY_OF_MONTH
+      - name: DAY_OF_YEAR
+      - name: EPOCH
+      - name: WEEK_OF_YEAR_ISO
+      - name: WEEK_ISO
+      - name: WEEK_OF_YEAR
+      - name: MONTH
+      - name: MONTH_NAME
+      - name: QUARTER
+      - name: QUARTER_NAME
+      - name: YEAR
+      - name: YEAR_OF_WEEK_ISO
+      - name: FIRST_DAY_OF_WEEK
+      - name: LAST_DAY_OF_WEEK
+      - name: LAST_BUSINESS_DAY_OF_WEEK
+      - name: FIRST_DAY_OF_MONTH
+      - name: LAST_DAY_OF_MONTH
+      - name: FIRST_BUSINESS_DAY_OF_MONTH
+      - name: LAST_BUSINESS_DAY_OF_MONTH
+      - name: FIRST_DAY_OF_QUARTER
+      - name: LAST_DAY_OF_QUARTER
+      - name: FIRST_DAY_OF_YEAR
+      - name: LAST_DAY_OF_YEAR
+      - name: YYYYMM
+      - name: YYYYMMDD
+      - name: IS_FIRST_DAY_OF_WEEK
+      - name: IS_LAST_DAY_OF_WEEK
+      - name: IS_LAST_BUSINESS_DAY_OF_WEEK
+      - name: IS_BUSINESS_DAY
+      - name: IS_WEEKEND_DAY
+      - name: IS_LAST_DAY_OF_MONTH
+      - name: IS_LAST_BUSINESS_DAY_OF_MONTH

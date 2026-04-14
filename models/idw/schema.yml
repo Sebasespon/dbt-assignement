@@ -1,0 +1,93 @@
+version: 2
+
+models:
+
+  # ── Landing ───────────────────────────────────────────────────────────────
+  - name: idw_raw_instruments
+    description: Raw pass-through of the instruments seed (IDW landing layer)
+
+  - name: idw_raw_portfolios
+    description: Raw pass-through of the portfolios seed (IDW landing layer)
+
+  # ── Staging ───────────────────────────────────────────────────────────────
+  - name: idw_stg_instruments
+    description: Cleansed instrument master — upper-cased codes, type-cast, validity flag
+    columns:
+      - name: isin
+        description: 12-character ISIN (primary key)
+        tests:
+          - not_null
+          - unique
+      - name: asset_class
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['EQUITY', 'BOND']
+      - name: is_valid
+        tests:
+          - not_null
+
+  - name: idw_stg_portfolios
+    description: Cleansed portfolio master — upper-cased codes, boolean cast
+    columns:
+      - name: portfolio_code
+        tests:
+          - not_null
+          - unique
+
+  - name: idw_stg_holdings
+    description: >
+      Cleansed daily holdings positions — type-cast dates and numerics,
+      upper-cased code fields, invalid rows flagged via is_valid.
+    columns:
+      - name: valuation_date
+        description: Business day of the position valuation (cast to date).
+        tests: [not_null]
+      - name: portfolio_code
+        description: Upper-cased portfolio identifier.
+        tests: [not_null]
+      - name: isin
+        description: Upper-cased 12-character ISIN.
+        tests: [not_null]
+      - name: quantity
+        description: Number of units held (cast to bigint).
+        tests: [not_null]
+      - name: market_value_base
+        description: Market value in portfolio base currency (cast to double).
+        tests: [not_null]
+      - name: weight_pct
+        description: Position weight as % of portfolio NAV (cast to double).
+        tests: [not_null]
+      - name: is_valid
+        description: >
+          FALSE if any key is null/blank, ISIN length ≠ 12, quantity ≤ 0,
+          market_value_base ≤ 0, or weight_pct outside [0, 100].
+        tests: [not_null]
+
+  - name: idw_stg_performance
+    description: >
+      Cleansed daily instrument-level return and attribution data — type-cast
+      dates and return fields, upper-cased code fields, invalid rows flagged via is_valid.
+    columns:
+      - name: valuation_date
+        description: Business day of the return observation (cast to date).
+        tests: [not_null]
+      - name: portfolio_code
+        description: Upper-cased portfolio identifier.
+        tests: [not_null]
+      - name: isin
+        description: Upper-cased 12-character ISIN.
+        tests: [not_null]
+      - name: daily_return_bps
+        description: Instrument daily return in basis points (cast to double).
+        tests: [not_null]
+      - name: contribution_bps
+        description: >
+          Instrument contribution to portfolio return in bps
+          (weight_pct × daily_return_bps / 100), cast to double.
+        tests: [not_null]
+      - name: is_valid
+        description: >
+          FALSE if any key is null/blank, ISIN length ≠ 12,
+          or either return field is null.
+        tests: [not_null]

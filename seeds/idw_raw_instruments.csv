@@ -1,0 +1,21 @@
+isin,instrument_name,asset_class,country_code,currency,sector_l1_code,sector_l1_name,sector_l2_code,sector_l2_name,region_code,region_name
+US0378331005,Apple Inc.,EQUITY,US,USD,TECH,Technology,SWTECH,Software & Tech Hardware,NORTH_AMERICA,North America
+US5949181045,Microsoft Corp.,EQUITY,US,USD,TECH,Technology,SWTECH,Software & Tech Hardware,NORTH_AMERICA,North America
+US0231351067,Amazon.com Inc.,EQUITY,US,USD,CONS,Consumer Discretionary,RETCD,Retail & E-Commerce,NORTH_AMERICA,North America
+US88160R1014,Tesla Inc.,EQUITY,US,USD,CONS,Consumer Discretionary,AUTO,Automobiles,NORTH_AMERICA,North America
+US46625H1005,JPMorgan Chase & Co.,EQUITY,US,USD,FINS,Financials,BANK,Banks,NORTH_AMERICA,North America
+DE0005140008,Deutsche Bank AG,EQUITY,DE,EUR,FINS,Financials,BANK,Banks,EUROPE,Europe
+FR0000131104,BNP Paribas SA,EQUITY,FR,EUR,FINS,Financials,BANK,Banks,EUROPE,Europe
+CH0012221716,ABB Ltd.,EQUITY,CH,CHF,INDU,Industrials,ELCT,Electrical Equipment,EUROPE,Europe
+GB0009252882,GSK plc,EQUITY,GB,GBP,HLTH,Healthcare,PHARMA,Pharmaceuticals,EUROPE,Europe
+JP3633400001,Toyota Motor Corp.,EQUITY,JP,JPY,CONS,Consumer Discretionary,AUTO,Automobiles,ASIA_PAC,Asia Pacific
+AU000000BHP4,BHP Group Ltd.,EQUITY,AU,AUD,MATL,Materials,METMIN,Metals & Mining,ASIA_PAC,Asia Pacific
+HK0000069689,AIA Group Ltd.,EQUITY,HK,HKD,FINS,Financials,INS,Insurance,ASIA_PAC,Asia Pacific
+XS1000000001,France OAT 3.0% 2030,BOND,FR,EUR,GOVT,Government,SVRN,Sovereign,EUROPE,Europe
+XS1000000002,Germany Bund 1.5% 2028,BOND,DE,EUR,GOVT,Government,SVRN,Sovereign,EUROPE,Europe
+XS1000000003,US Treasury 2.5% 2027,BOND,US,USD,GOVT,Government,SVRN,Sovereign,NORTH_AMERICA,North America
+XS1000000004,Apple Corp Bond 2.8% 2029,BOND,US,USD,CORP,Corporate,TECH_CORP,Technology Corporate,NORTH_AMERICA,North America
+XS1000000005,VW Auto Bond 1.875% 2026,BOND,DE,EUR,CORP,Corporate,AUTO_CORP,Automotive Corporate,EUROPE,Europe
+XS1000000006,HSBC Bank Bond 4.0% 2031,BOND,GB,GBP,CORP,Corporate,FIN_CORP,Financial Corporate,EUROPE,Europe
+XS1000000007,Japan JGB 0.5% 2030,BOND,JP,JPY,GOVT,Government,SVRN,Sovereign,ASIA_PAC,Asia Pacific
+XS1000000008,Nestle Corp Bond 1.25% 2027,BOND,CH,CHF,CORP,Corporate,CONS_CORP,Consumer Corporate,EUROPE,Europe

@@ -1,0 +1,52 @@
+version: 2
+
+seeds:
+  - name: idw_raw_portfolios
+    schema: idw_landing
+    alias: idw_raw_portfolios
+    description: >
+      Portfolio and benchmark master data owned by the IDW domain.
+      One row per portfolio or benchmark identified by its portfolio_code.
+    config:
+      column_types:
+        portfolio_code:   varchar
+        portfolio_name:   varchar
+        base_currency:    varchar
+        is_benchmark:     boolean
+        benchmark_code:   varchar
+
+    columns:
+      - name: portfolio_code
+        description: Short alphanumeric code that uniquely identifies the portfolio or benchmark.
+        tests:
+          - not_null
+          - unique
+
+      - name: portfolio_name
+        description: Full display name of the portfolio or benchmark.
+        tests:
+          - not_null
+
+      - name: base_currency
+        description: ISO 4217 base currency used for NAV and performance reporting.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["EUR", "USD", "GBP", "CHF", "JPY"]
+
+      - name: is_benchmark
+        description: >
+          TRUE if this row represents a benchmark / index;
+          FALSE if it is an actively managed fund.
+        tests:
+          - not_null
+
+      - name: benchmark_code
+        description: >
+          portfolio_code of the assigned benchmark.
+          NULL for benchmark rows themselves (self-referential FK would be circular).
+        tests:
+          - relationships:
+              to: ref('raw_portfolios')
+              field: portfolio_code
+              where: "benchmark_code is not null"

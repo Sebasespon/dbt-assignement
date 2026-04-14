@@ -1,0 +1,7 @@
+interview:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "interview.duckdb"
+      schema: main

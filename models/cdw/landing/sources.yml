@@ -1,0 +1,123 @@
+version: 2
+
+sources:
+  - name: idw_staging
+    schema: idw_staging
+    description: >
+      IDW staging data points owned and maintained by IDW team..
+
+    tables:
+      - name: idw_stg_instruments
+        description: >
+          Instrument master data — loaded from seeds/raw_instruments.csv
+          (seed alias: idw_raw_instruments). One row per ISIN.
+        columns:
+          - name: isin
+            description: International Securities Identification Number — primary key.
+            tests: [not_null, unique]
+          - name: instrument_name
+            description: Full display name of the instrument.
+            tests: [not_null]
+          - name: asset_class
+            description: Broad asset class (EQUITY or BOND).
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["EQUITY", "BOND"]
+          - name: country_code
+            description: ISO 3166-1 alpha-2 issuer country code.
+            tests: [not_null]
+          - name: currency
+            description: ISO 4217 trading currency.
+            tests: [not_null]
+          - name: sector_l1_code
+            description: Top-level sector code (e.g. TECH, FINS).
+            tests: [not_null]
+          - name: sector_l1_name
+            description: Human-readable level-1 sector label.
+            tests: [not_null]
+          - name: sector_l2_code
+            description: Sub-sector code within the level-1 sector.
+            tests: [not_null]
+          - name: sector_l2_name
+            description: Human-readable level-2 sub-sector label.
+            tests: [not_null]
+          - name: region_code
+            description: Geographic region code.
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["NORTH_AMERICA", "EUROPE", "ASIA_PAC"]
+          - name: region_name
+            description: Human-readable region label.
+            tests: [not_null]
+
+      - name: idw_stg_portfolios
+        description: >
+          Portfolio and benchmark master data — loaded from seeds/raw_portfolios.csv
+          (seed alias: idw_raw_portfolios). One row per portfolio or benchmark.
+        columns:
+          - name: portfolio_code
+            description: Short alphanumeric code — primary key.
+            tests: [not_null, unique]
+          - name: portfolio_name
+            description: Full display name of the portfolio or benchmark.
+            tests: [not_null]
+          - name: base_currency
+            description: ISO 4217 base currency for NAV and performance reporting.
+            tests: [not_null]
+          - name: is_benchmark
+            description: TRUE if this row is a benchmark/index; FALSE if an active fund.
+            tests: [not_null]
+          - name: benchmark_code
+            description: portfolio_code of the assigned benchmark. NULL for benchmark rows.
+
+      - name: idw_stg_holdings
+        description: >
+          Daily end-of-day holdings positions — loaded from seeds/raw_holdings.csv
+          (seed alias: idw_raw_holdings). One row per (market_date, portfolio_code, isin).
+        columns:
+          - name: market_date
+            description: Business day on which the position was valued (ISO 8601 date).
+            tests: [not_null]
+          - name: portfolio_code
+            description: Foreign key → idw_raw_portfolios.portfolio_code.
+            tests: [not_null]
+          - name: isin
+            description: Foreign key → idw_raw_instruments.isin.
+            tests: [not_null]
+          - name: quantity
+            description: Number of units held.
+            tests: [not_null]
+          - name: market_value_base
+            description: Market value of the position in the portfolio base currency.
+            tests: [not_null]
+          - name: weight_pct
+            description: Position weight as a percentage of total portfolio NAV (~100% per portfolio per day).
+            tests: [not_null]
+
+      - name: idw_stg_performance
+        description: >
+          Daily instrument-level return and attribution data — loaded from
+          seeds/raw_performance.csv (seed alias: idw_raw_performance).
+          One row per (market_date, portfolio_code, isin).
+        columns:
+          - name: market_date
+            description: Business day of the return observation (ISO 8601 date).
+            tests: [not_null]
+          - name: portfolio_code
+            description: Foreign key → idw_raw_portfolios.portfolio_code.
+            tests: [not_null]
+          - name: isin
+            description: Foreign key → idw_raw_instruments.isin.
+            tests: [not_null]
+          - name: daily_return_bps
+            description: >
+              Instrument daily return in basis points (1 bps = 0.01%).
+              Drawn from N(0, σ): σ = 60 bps for equities, σ = 30 bps for bonds.
+            tests: [not_null]
+          - name: contribution_bps
+            description: >
+              Instrument contribution to portfolio return: weight_pct × daily_return_bps / 100.
+              SUM across all instruments equals the total portfolio daily return in bps.
+            tests: [not_null]

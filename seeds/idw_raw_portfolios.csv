@@ -1,0 +1,7 @@
+portfolio_code,portfolio_name,base_currency,is_benchmark,benchmark_code
+FUND_A,Global Balanced Fund A,EUR,FALSE,BNK_MSCI_WORLD
+FUND_B,European Equity Fund B,EUR,FALSE,BNK_MSCI_EUR
+FUND_C,Global Fixed Income Fund C,USD,FALSE,BNK_AGG
+BNK_MSCI_WORLD,MSCI World Index,USD,TRUE,
+BNK_MSCI_EUR,MSCI Europe Index,EUR,TRUE,
+BNK_AGG,Bloomberg Global Aggregate,USD,TRUE,

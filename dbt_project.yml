@@ -1,0 +1,61 @@
+name: "interview_assignment"
+version: "1.0.0"
+config-version: 2
+
+profile: "interview"
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+seeds:
+  interview_assignment:
+    +schema: idw_landing
+    +quote_columns: false
+
+models:
+  interview_assignment:
+
+    # ── IDW: Investment Data Warehouse (external mesh domain) ──────────────
+    idw:
+      staging:
+        +schema: idw_staging
+        +materialized: view
+      end_user:
+        # IDW exposes clean reference tables to the data consumers
+        +schema: idw_end_user
+        +materialized: view
+
+    # ── CDW: Client Tech Data Warehouse ───────────────────────────────────
+    cdw:
+      landing:
+        +schema: cdw_landing
+        +materialized: table
+      staging:
+        # Enrichment views (bv_*) at staging root
+        +schema: cdw_staging
+        +materialized: view
+        lv01_build:
+          # S1: Select and join source datasets (platform-agnostic)
+          +schema: cdw_staging
+          +materialized: view
+        lv02_modelling:
+          # S2: Aggregate, transform, rank
+          +schema: cdw_staging
+          +materialized: table
+      end_user:
+        # Consumer-facing reporting views
+        +schema: cdw_reporting
+        +materialized: view
+
+vars:
+  ### Models variables
+  # cdw_raw_as_of_date model
+  START_DATE: "2010-01-01"
+  END_DATE: "2030-12-31"

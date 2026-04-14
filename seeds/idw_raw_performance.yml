@@ -1,0 +1,54 @@
+version: 2
+
+seeds:
+  - name: idw_raw_performance
+    schema: idw_landing
+    alias: idw_raw_performance
+    description: >
+      Daily instrument-level return and attribution data sourced from the CDW domain.
+      One row per (valuation_date, portfolio_code, isin) containing the instrument's
+      daily return and its contribution to the portfolio return for that day.
+    config:
+      column_types:
+        valuation_date:     date
+        portfolio_code:     varchar
+        isin:               varchar
+        daily_return_bps:   double
+        contribution_bps:   double
+
+    columns:
+      - name: valuation_date
+        description: Business day to which the return observation belongs (ISO 8601 date).
+        tests:
+          - not_null
+
+      - name: portfolio_code
+        description: Foreign key to raw_portfolios.portfolio_code.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('raw_portfolios')
+              field: portfolio_code
+
+      - name: isin
+        description: Foreign key to raw_instruments.isin.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('raw_instruments')
+              field: isin
+
+      - name: daily_return_bps
+        description: >
+          Instrument daily return expressed in basis points (1 bps = 0.01 %).
+          Drawn from a normal distribution: σ = 60 bps for equities, σ = 30 bps for bonds.
+        tests:
+          - not_null
+
+      - name: contribution_bps
+        description: >
+          Instrument contribution to the portfolio return for the day.
+          Computed as: weight_pct × daily_return_bps / 100.
+          Summing across all instruments gives the total portfolio return in bps.
+        tests:
+          - not_null
