@@ -77,7 +77,7 @@ sources:
           Daily end-of-day holdings positions — loaded from seeds/raw_holdings.csv
           (seed alias: idw_raw_holdings). One row per (market_date, portfolio_code, isin).
         columns:
-          - name: market_date
+          - name: valuation_date
             description: Business day on which the position was valued (ISO 8601 date).
             tests: [not_null]
           - name: portfolio_code
@@ -100,9 +100,9 @@ sources:
         description: >
           Daily instrument-level return and attribution data — loaded from
           seeds/raw_performance.csv (seed alias: idw_raw_performance).
-          One row per (market_date, portfolio_code, isin).
+          One row per (valuation_date, portfolio_code, isin).
         columns:
-          - name: market_date
+          - name: valuation_date
             description: Business day of the return observation (ISO 8601 date).
             tests: [not_null]
           - name: portfolio_code

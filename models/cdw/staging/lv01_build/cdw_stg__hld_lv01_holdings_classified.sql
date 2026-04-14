@@ -12,7 +12,7 @@
     config(
         materialized='view',
         schema='cdw_staging',
-        alias='cdw_stg__hld_holdings_classified'
+        alias='cdw_stg__hld_lv01_holdings_classified'
     )
 }}
 

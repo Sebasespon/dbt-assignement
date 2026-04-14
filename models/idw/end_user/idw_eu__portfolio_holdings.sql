@@ -22,7 +22,7 @@ select
     p.base_currency,
 
     -- ── Instrument identity ────────────────────────────────────────────────
-    inst.isin,
+    i.isin,
     i.instrument_name,
     i.asset_class,
     i.country_code,
@@ -44,6 +44,6 @@ inner join {{ ref('idw_stg_portfolios') }}  as p
     on h.portfolio_code = p.portfolio_code
 
 inner join {{ ref('idw_stg_instruments') }} as i
-    on h.isin = inst.isin
+    on h.isin = i.isin
 
 where h.is_valid

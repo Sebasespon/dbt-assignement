@@ -88,7 +88,7 @@ models:
       schema: cdw_landing
       alias: cdw_raw_holdings
     columns:
-      - name: market_date
+      - name: valuation_date
         description: Business day on which the position was valued.
         tests: [not_null]
       - name: portfolio_code
@@ -117,7 +117,7 @@ models:
       schema: cdw_landing
       alias: cdw_raw_performance
     columns:
-      - name: market_date
+      - name: valuation_date
         description: Business day to which the return observation belongs.
         tests: [not_null]
       - name: portfolio_code
@@ -181,4 +181,71 @@ models:
   # ── CDW Staging S2 ────────────────────────────────────────────────────────────
   # Aggregations — one model per breakdown dimension + a normalised aggregate.
   # Aggregations — one model for performance weekly total return.
+
+  - name: cdw_stg__bkd_lv02_by_region
+    description: >
+      Aggregated portfolio breakdown by geographic region.
+      One row per (market_date, portfolio_code, region_code, region_name).
+    tests:
+      - weight_sums_to_100:
+          tolerance: 0.02
+    columns:
+      - name: market_date
+        tests: [not_null]
+      - name: portfolio_code
+        tests: [not_null]
+      - name: region_code
+        tests: [not_null]
+      - name: region_name
+        tests: [not_null]
+      - name: total_weight_pct
+        tests: [not_null]
+      - name: total_market_value_base
+        tests: [not_null]
+
+  - name: cdw_stg__bkd_lv02_by_sector_l1
+    description: >
+      Aggregated portfolio breakdown by top-level sector (L1).
+      One row per (market_date, portfolio_code, sector_l1_code, sector_l1_name).
+    tests:
+      - weight_sums_to_100:
+          tolerance: 0.02
+    columns:
+      - name: market_date
+        tests: [not_null]
+      - name: portfolio_code
+        tests: [not_null]
+      - name: sector_l1_code
+        tests: [not_null]
+      - name: sector_l1_name
+        tests: [not_null]
+      - name: total_weight_pct
+        tests: [not_null]
+      - name: total_market_value_base
+        tests: [not_null]
+
+  - name: cdw_stg__bkd_lv02_by_sector_l2
+    description: >
+      Aggregated portfolio breakdown by sub-sector (L2).
+      One row per (market_date, portfolio_code, sector_l1_code, sector_l1_name, sector_l2_code, sector_l2_name).
+    tests:
+      - weight_sums_to_100:
+          tolerance: 0.02
+    columns:
+      - name: market_date
+        tests: [not_null]
+      - name: portfolio_code
+        tests: [not_null]
+      - name: sector_l1_code
+        tests: [not_null]
+      - name: sector_l1_name
+        tests: [not_null]
+      - name: sector_l2_code
+        tests: [not_null]
+      - name: sector_l2_name
+        tests: [not_null]
+      - name: total_weight_pct
+        tests: [not_null]
+      - name: total_market_value_base
+        tests: [not_null]
 

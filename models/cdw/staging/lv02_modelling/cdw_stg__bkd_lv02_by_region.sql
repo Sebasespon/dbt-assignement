@@ -14,7 +14,7 @@ select
     sum(weight_pct) as total_weight_pct,
     sum(market_value_base) as total_market_value_base,
     count(distinct isin) as distinct_instruments
-from {{ ref('cdw_stg__hld_holdings_classified') }}
+from {{ ref('cdw_stg__hld_lv01_holdings_classified') }}
 group by
     market_date,
     portfolio_code,
