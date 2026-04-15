@@ -14,7 +14,7 @@ with daily_portfolio_returns as (
     from {{ ref('cdw_raw_performance') }} as p
     inner join {{ ref('cdw_raw_as_of_date') }} as d
         on p.valuation_date = d.as_of_date
-    where d.is_business_day
+    where d.is_business_day = true
     group by
         p.valuation_date,
         p.portfolio_code
